@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #8D6E63;
+  --color-brand-accent: #D81B60;
+  --color-brand-bg: #FFF9F8;
+  --color-brand-card: #E8D9D1;
+  
+  /* Removemos a fonte serifa – usaremos sans-serif padrão */
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root {
+  background-color: var(--color-brand-bg);
+  color: #5D4037;
+  font-family: var(--font-sans);
+}
