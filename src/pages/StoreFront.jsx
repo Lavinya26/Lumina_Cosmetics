@@ -227,7 +227,9 @@ export default function StoreFront() {
 
   const voltarAnterior = () => setSubAbaAtiva(null);
 
-  const handleLogout = () => {
+  // Removido handleLogout (admin) – não será usado, pois tiramos o "Sair (Admin)"
+  // Mantido apenas para referência, mas não será chamado
+  const handleLogoutAdmin = () => {
     localStorage.removeItem('lumina_user');
     Swal.fire('Desconectado', 'Você saiu da conta do administrador.', 'info');
     setAbaAtiva('HOME');
@@ -473,16 +475,21 @@ export default function StoreFront() {
                   <span className="text-sm font-medium text-red-500">Sair da Conta</span>
                 </button>
               )}
-              <button onClick={handleLogout} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 transition-colors text-left">
-                <LogOut size={20} className="text-red-500" />
-                <span className="text-sm font-medium text-red-500">Sair (Admin)</span>
+              {/* NOVO: Área do Admin - redireciona para login */}
+              <button 
+                onClick={() => { window.location.href = '/login'; }} 
+                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors text-left"
+              >
+                <Shield size={20} className="text-gray-500" />
+                <span className="text-sm font-medium text-gray-700">Área do Admin</span>
               </button>
             </nav>
           </div>
         </>
       )}
 
-      {/* Modais */}
+      {/* Modais existentes (beneficioModal, modalEnderecoAberto, modalSenhaAberto, faqSelecionada, niveisModal, produtoDetalhe) */}
+      {/* ========== MODAL DE BENEFÍCIO ========== */}
       {beneficioModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
@@ -496,6 +503,7 @@ export default function StoreFront() {
         </div>
       )}
 
+      {/* ========== MODAL DE ENDEREÇO ========== */}
       {modalEnderecoAberto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
@@ -524,6 +532,7 @@ export default function StoreFront() {
         </div>
       )}
 
+      {/* ========== MODAL DE SENHA ========== */}
       {modalSenhaAberto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
@@ -552,6 +561,7 @@ export default function StoreFront() {
         </div>
       )}
 
+      {/* ========== MODAL FAQ ========== */}
       {faqSelecionada && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
@@ -565,6 +575,7 @@ export default function StoreFront() {
         </div>
       )}
 
+      {/* ========== MODAL DE NÍVEIS ========== */}
       {niveisModal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-auto p-6 shadow-2xl">
@@ -714,7 +725,7 @@ export default function StoreFront() {
         </div>
       )}
 
-      {/* ========== HEADER FIXO ========== */}
+      {/* HEADER FIXO */}
       <header className={`fixed top-0 left-0 right-0 z-40 py-4 px-6 flex justify-between items-center shadow-md backdrop-blur-md ${modoEscuro ? 'bg-slate-900/90' : 'bg-white/90'}`}>
         <button onClick={() => setMenuAberto(true)} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
           <Menu size={24} className="text-gray-500" />
@@ -1114,11 +1125,11 @@ export default function StoreFront() {
               </div>
 
               <button 
-                onClick={handleLogout} 
+                onClick={handleLogoutAdmin} 
                 className="w-full flex items-center justify-center gap-2 p-5 font-bold text-[10px] uppercase rounded-[25px] border transition
                   bg-red-50/20 text-red-400 border-red-50 hover:bg-red-50"
               >
-                <LogOut size={16} /> Sair da Conta
+                <LogOut size={16} /> Sair (Admin)
               </button>
             </div>
           </div>
@@ -1244,7 +1255,7 @@ export default function StoreFront() {
           </div>
         )}
 
-        {/* ==================== FOOTER ==================== */}
+        {/* FOOTER */}
         <footer className="mt-20 border-t border-pink-100 pt-12 pb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
@@ -1270,7 +1281,7 @@ export default function StoreFront() {
                 <h4 className="text-[#D81B60] font-bold text-lg mb-3">Contato</h4>
                 <ul className={`space-y-2 text-sm ${modoEscuro ? 'text-gray-300' : 'text-gray-600'}`}>
                   <li className="flex items-center gap-2"><Phone size={16} /> (32) 98494-0952</li>
-                  <li className="flex items-center gap-2"><Mail size={16} /> luminacosmetics@gmail.com.br</li>
+                  <li className="flex items-center gap-2"><Mail size={16} /> contato@luminacosmetics.com.br</li>
                   <li className="flex items-center gap-2"><MapPin size={16} /> Muriaé - MG</li>
                 </ul>
               </div>
@@ -1285,7 +1296,6 @@ export default function StoreFront() {
             </div>
           </div>
 
-          {/* Redes Sociais e Formas de Pagamento lado a lado */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 border-t border-pink-100 pt-8">
             <div>
               <h4 className="text-[#D81B60] font-bold text-lg mb-3">Redes Sociais</h4>
@@ -1313,7 +1323,6 @@ export default function StoreFront() {
             </div>
           </div>
 
-          {/* Botão voltar ao topo */}
           <div className="flex justify-center my-8">
             <button
               onClick={scrollToTop}
@@ -1323,7 +1332,6 @@ export default function StoreFront() {
             </button>
           </div>
 
-          {/* Linha de direitos */}
           <div className="border-t border-pink-100 pt-6 text-center text-xs text-gray-400 space-y-2">
             <p>© 2026 Lumina Cosmetics | Todos os direitos reservados</p>
             <p>CNPJ: 17.947.581/0001-76 | Centro, 1000 - Muriaé/MG - CEP: 36.880-000</p>
@@ -1340,19 +1348,6 @@ export default function StoreFront() {
           <TabButton icon={User} label="PROFILE" active={abaAtiva === 'PROFILE' || abaAtiva === 'SETTINGS'} onClick={() => {setAbaAtiva('PROFILE'); setSubAbaAtiva(null);}} modoEscuro={modoEscuro} />
         </div>
       </nav>
-
-      {/* BOTÃO FLUTUANTE PARA ACESSO AO ADMIN */}
-      <button
-        onClick={() => window.location.href = '/login'}
-        className="fixed bottom-6 left-6 z-50 bg-[#795548] text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center"
-        title="Área do Administrador"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <path d="M12 8v4"/>
-          <path d="M12 16h.01"/>
-        </svg>
-      </button>
 
       {/* WHATSAPP – APENAS NA LOJA */}
       <WhatsAppButton />

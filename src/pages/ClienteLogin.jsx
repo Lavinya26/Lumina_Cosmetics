@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Lock, User, Mail, ArrowLeft } from 'lucide-react';
+import Swal from 'sweetalert2';
+import { useCart } from '../context/CartContext';
 
 export default function ClienteLogin() {
   const [email, setEmail] = useState('');
@@ -10,6 +12,7 @@ export default function ClienteLogin() {
   const [nome, setNome] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const navigate = useNavigate();
+  const { setCliente } = useCart(); // 👈 pega a função do contexto
 
   const handleVoltar = () => {
     navigate('/?aba=profile');
@@ -28,20 +31,61 @@ export default function ClienteLogin() {
 
       if (data && data.length > 0) {
         const clienteLogado = data[0];
+        // Salva no localStorage
         localStorage.setItem('cliente_logado', JSON.stringify(clienteLogado));
-        alert(`Bem-vindo, ${clienteLogado.nome}!`);
+        // Atualiza o contexto do carrinho IMEDIATAMENTE
+        setCliente(clienteLogado);
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Bem-vindo(a)!',
+          text: `Olá ${clienteLogado.nome}, você está logado.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
         navigate('/');
       } else {
-        alert('E-mail ou senha incorretos');
+        Swal.fire('Erro', 'E-mail ou senha incorretos', 'error');
       }
     } catch (err) {
       console.error("Erro no login:", err);
-      alert('Erro ao tentar fazer login. Tente novamente.');
+      Swal.fire('Erro', 'Não foi possível fazer login. Tente novamente.', 'error');
     }
   };
 
   const handleCadastro = async (e) => {
     e.preventDefault();
+
+    // Verifica se o e-mail já existe antes de tentar inserir
+    const { data: existingUser, error: checkError } = await supabase
+      .from('clientes')
+      .select('email')
+      .eq('email', email)
+      .single();
+
+    if (existingUser) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'E-mail já cadastrado',
+        text: 'Este e-mail já possui uma conta. Faça login diretamente.',
+        confirmButtonText: 'Ir para login',
+        showCancelButton: true,
+        cancelButtonText: 'Tentar outro e-mail'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setIsCadastro(false);
+          setEmail('');
+          setSenha('');
+        }
+      });
+      return;
+    }
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      Swal.fire('Erro', 'Não foi possível verificar o e-mail. Tente novamente.', 'error');
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('clientes')
@@ -49,18 +93,32 @@ export default function ClienteLogin() {
         .select();
 
       if (error) {
-        alert('Erro ao cadastrar: ' + error.message);
+        if (error.code === '23505') {
+          Swal.fire('E-mail duplicado', 'Este e-mail já está cadastrado. Faça login.', 'warning');
+        } else {
+          Swal.fire('Erro ao cadastrar', error.message, 'error');
+        }
+      } else if (data && data.length > 0) {
+        const novoCliente = data[0];
+        // Salva no localStorage
+        localStorage.setItem('cliente_logado', JSON.stringify(novoCliente));
+        // Atualiza o contexto do carrinho IMEDIATAMENTE
+        setCliente(novoCliente);
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Cadastro realizado!',
+          text: 'Você já está logado.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        navigate('/');
       } else {
-        alert('Cadastro realizado! Faça login.');
-        setIsCadastro(false);
-        setNome('');
-        setEmail('');
-        setSenha('');
-        setWhatsapp('');
+        Swal.fire('Erro', 'Não foi possível cadastrar. Tente novamente.', 'error');
       }
     } catch (err) {
       console.error(err);
-      alert('Erro ao cadastrar. Tente novamente.');
+      Swal.fire('Erro', 'Não foi possível cadastrar. Tente novamente.', 'error');
     }
   };
 
@@ -166,7 +224,13 @@ export default function ClienteLogin() {
           {isCadastro ? 'Já tem conta?' : 'Não tem conta?'}{' '}
           <button
             type="button"
-            onClick={() => setIsCadastro(!isCadastro)}
+            onClick={() => {
+              setIsCadastro(!isCadastro);
+              setNome('');
+              setEmail('');
+              setSenha('');
+              setWhatsapp('');
+            }}
             className="text-[#D81B60] font-bold hover:underline"
           >
             {isCadastro ? 'Faça login' : 'Cadastre-se'}
