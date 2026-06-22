@@ -20,7 +20,7 @@ export default function StoreFront() {
   const [produtosOfertas, setProdutosOfertas] = useState([]);
   const [produtosMaisBaratos, setProdutosMaisBaratos] = useState([]);
   const [produtosRecentes, setProdutosRecentes] = useState([]);
-  const [abaAtiva, setAbaAtiva] = useState('HOME'); 
+  const [abaAtiva, setAbaAtiva] = useState('HOME');
   const [subAbaAtiva, setSubAbaAtiva] = useState(null);
   const [categoriaAtiva, setCategoriaAtiva] = useState('Todos');
   const [busca, setBusca] = useState('');
@@ -34,6 +34,9 @@ export default function StoreFront() {
 
   const [carrosselIndex, setCarrosselIndex] = useState(0);
   const [carrosselImages, setCarrosselImages] = useState([]);
+
+  // Estado para busca mobile
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Modal de detalhes
   const [produtoDetalhe, setProdutoDetalhe] = useState(null);
@@ -185,7 +188,7 @@ export default function StoreFront() {
         const imagens = (data || []).filter(p => p.imagem_url).map(p => p.imagem_url);
         setCarrosselImages(imagens);
       } catch (error) {
-        console.error("Erro ao carregar produtos do carrossel:", error);
+        console.error('Erro ao carregar produtos do carrossel:', error);
         setCarrosselImages([]);
       }
     }
@@ -212,7 +215,7 @@ export default function StoreFront() {
       if (error) throw error;
       setPedidosCliente(data || []);
     } catch (error) {
-      console.error("Erro ao carregar pedidos:", error);
+      console.error('Erro ao carregar pedidos:', error);
       setPedidosCliente([]);
     } finally {
       setCarregandoPedidos(false);
@@ -227,8 +230,6 @@ export default function StoreFront() {
 
   const voltarAnterior = () => setSubAbaAtiva(null);
 
-  // Removido handleLogout (admin) – não será usado, pois tiramos o "Sair (Admin)"
-  // Mantido apenas para referência, mas não será chamado
   const handleLogoutAdmin = () => {
     localStorage.removeItem('lumina_user');
     Swal.fire('Desconectado', 'Você saiu da conta do administrador.', 'info');
@@ -329,7 +330,7 @@ export default function StoreFront() {
   };
 
   const handleEmail = () => {
-    window.location.href = "mailto:suporte@lumina.com.br?subject=Ajuda - Lumina Cosmetics";
+    window.location.href = 'mailto:suporte@lumina.com.br?subject=Ajuda - Lumina Cosmetics';
   };
 
   const handleFinalizarPedido = async () => {
@@ -365,13 +366,13 @@ export default function StoreFront() {
             quantidade: item.quantity,
             preco_unitario: item.preco
           });
-        if (itemError) console.error("Erro ao inserir item:", itemError);
+        if (itemError) console.error('Erro ao inserir item:', itemError);
       }
 
       const pontosGanhos = Math.floor(cartTotal);
       await addPoints(pontosGanhos);
 
-      const phoneNumber = "5511999999999";
+      const phoneNumber = '5511999999999';
       const itensTexto = cartItems.map(item => 
         `• ${item.nome} (${item.quantity}x) - R$ ${(item.preco * item.quantity).toFixed(2)}`
       ).join('%0A');
@@ -382,7 +383,7 @@ export default function StoreFront() {
       Swal.fire('Pedido realizado!', `Você ganhou ${pontosGanhos} pontos.`, 'success');
       setAbaAtiva('HOME');
     } catch (error) {
-      console.error("Erro ao finalizar pedido:", error);
+      console.error('Erro ao finalizar pedido:', error);
       Swal.fire('Erro no pedido', 'Não foi possível processar o pedido. Tente novamente.', 'error');
     }
   };
@@ -402,27 +403,27 @@ export default function StoreFront() {
   };
 
   const niveisInfo = [
-    { 
-      nivel: 'Bronze', 
-      pontos: '0 - 499', 
-      cor: 'bg-amber-600', 
-      corFundo: 'bg-amber-50', 
+    {
+      nivel: 'Bronze',
+      pontos: '0 - 499',
+      cor: 'bg-amber-600',
+      corFundo: 'bg-amber-50',
       texto: 'Nível inicial. Ganhe 1 ponto por cada R$1 gasto.',
       beneficios: ['Frete grátis em compras acima de R$200', 'Acesso a ofertas mensais']
     },
-    { 
-      nivel: 'Prata', 
-      pontos: '500 - 999', 
-      cor: 'bg-gray-400', 
-      corFundo: 'bg-gray-50', 
+    {
+      nivel: 'Prata',
+      pontos: '500 - 999',
+      cor: 'bg-gray-400',
+      corFundo: 'bg-gray-50',
       texto: 'Nível intermediário. Ganhe 1,5 pontos por R$1 gasto.',
       beneficios: ['Frete grátis em compras acima de R$150', 'Acesso antecipado a lançamentos', 'Brinde de aniversário']
     },
-    { 
-      nivel: 'Ouro', 
-      pontos: '1000+', 
-      cor: 'bg-yellow-500', 
-      corFundo: 'bg-yellow-50', 
+    {
+      nivel: 'Ouro',
+      pontos: '1000+',
+      cor: 'bg-yellow-500',
+      corFundo: 'bg-yellow-50',
       texto: 'Nível máximo. Ganhe 2 pontos por R$1 gasto.',
       beneficios: ['Frete grátis em todas as compras', 'Drops exclusivos semanais', 'Desconto especial de 10%', 'Atendimento prioritário']
     }
@@ -475,7 +476,6 @@ export default function StoreFront() {
                   <span className="text-sm font-medium text-red-500">Sair da Conta</span>
                 </button>
               )}
-              {/* NOVO: Área do Admin - redireciona para login */}
               <button 
                 onClick={() => { window.location.href = '/login'; }} 
                 className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition-colors text-left"
@@ -488,8 +488,7 @@ export default function StoreFront() {
         </>
       )}
 
-      {/* Modais existentes (beneficioModal, modalEnderecoAberto, modalSenhaAberto, faqSelecionada, niveisModal, produtoDetalhe) */}
-      {/* ========== MODAL DE BENEFÍCIO ========== */}
+      {/* Modais */}
       {beneficioModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
@@ -503,7 +502,6 @@ export default function StoreFront() {
         </div>
       )}
 
-      {/* ========== MODAL DE ENDEREÇO ========== */}
       {modalEnderecoAberto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
@@ -532,7 +530,6 @@ export default function StoreFront() {
         </div>
       )}
 
-      {/* ========== MODAL DE SENHA ========== */}
       {modalSenhaAberto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
@@ -561,7 +558,6 @@ export default function StoreFront() {
         </div>
       )}
 
-      {/* ========== MODAL FAQ ========== */}
       {faqSelecionada && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
@@ -575,7 +571,6 @@ export default function StoreFront() {
         </div>
       )}
 
-      {/* ========== MODAL DE NÍVEIS ========== */}
       {niveisModal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-auto p-6 shadow-2xl">
@@ -614,7 +609,6 @@ export default function StoreFront() {
         </div>
       )}
 
-      {/* ========== MODAL DE DETALHES DO PRODUTO ========== */}
       {produtoDetalhe && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-auto shadow-2xl relative">
@@ -732,6 +726,7 @@ export default function StoreFront() {
         </button>
         <h1 className={`text-sm font-bold tracking-[0.3em] uppercase ${modoEscuro ? 'text-white' : 'text-[#5D4037]'}`}>Lumina Cosmetics</h1>
         <div className="flex items-center gap-3">
+          {/* BUSCA DESKTOP - sempre visível */}
           <div className="relative hidden md:block">
             <input 
               type="text" 
@@ -741,15 +736,43 @@ export default function StoreFront() {
               className={`w-48 px-3 py-1.5 rounded-full border text-xs focus:outline-none focus:ring-2 focus:ring-[#D81B60] ${modoEscuro ? 'bg-slate-800 border-slate-700 text-white placeholder:text-gray-400' : 'bg-white border-gray-200 text-gray-700'}`}
             />
           </div>
-          <button 
-            onClick={() => {
-              const termo = prompt("Digite o nome do produto:");
-              if (termo !== null) setBusca(termo);
-            }}
-            className="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors"
-          >
-            <Search size={22} className="text-gray-500" />
-          </button>
+
+          {/* BUSCA MOBILE - ícone expansível */}
+          <div className="md:hidden flex items-center">
+            {searchOpen ? (
+              <div className="relative flex items-center">
+                <input 
+                  type="text" 
+                  placeholder="Buscar produto..." 
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  onBlur={() => setSearchOpen(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === 'Escape') {
+                      setSearchOpen(false);
+                    }
+                  }}
+                  autoFocus
+                  className="w-40 px-3 py-1.5 rounded-full border text-xs focus:outline-none focus:ring-2 focus:ring-[#D81B60] bg-white border-gray-200 text-gray-700"
+                />
+                <button 
+                  onClick={() => setSearchOpen(false)} 
+                  className="ml-1 p-1 hover:bg-gray-100 rounded-full transition"
+                >
+                  <X size={18} className="text-gray-500" />
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setSearchOpen(true)} 
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <Search size={22} className="text-gray-500" />
+              </button>
+            )}
+          </div>
+
+          {/* CARRINHO */}
           <button 
             onClick={() => setAbaAtiva('CART')}
             className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -1349,7 +1372,6 @@ export default function StoreFront() {
         </div>
       </nav>
 
-      {/* WHATSAPP – APENAS NA LOJA */}
       <WhatsAppButton />
     </div>
   );
@@ -1489,7 +1511,7 @@ function SettingToggle({ icon: Icon, title, active, onToggle, modoEscuro }) {
 function TabButton({ icon: Icon, label, active, onClick, modoEscuro }) {
   return (
     <button onClick={onClick} className={`flex flex-col items-center gap-1 ${active ? 'text-[#D81B60]' : modoEscuro ? 'text-gray-400' : 'text-gray-300'}`}>
-      <Icon size={20} fill={active ? "currentColor" : "none"} />
+      <Icon size={20} fill={active ? 'currentColor' : 'none'} />
       <span className="text-[8px] font-bold uppercase">{label}</span>
     </button>
   );
